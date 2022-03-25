@@ -1,0 +1,6 @@
+node_modules/
+.env
+Caddyfile
+uploads/*
+!uploads/.gitkeep
+nodemon.json
