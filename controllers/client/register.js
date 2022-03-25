@@ -13,7 +13,7 @@ async function registerUser(req, res, next) {
       password: req.body.password,
     };
 
-    if (!email || !displayName || !password)
+    if (!userDetails.email || !userDetails.displayName || !userDetails.password)
       return next(httpErrors.BadRequest('All fields are required.'));
 
     if (userDetails.email !== userDetails.email.toLowerCase())
