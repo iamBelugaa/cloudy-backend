@@ -13,6 +13,9 @@ async function registerUser(req, res, next) {
       password: req.body.password,
     };
 
+    if (!email || !displayName || !password)
+      return next(httpErrors.BadRequest('All fields are required.'));
+
     if (userDetails.email !== userDetails.email.toLowerCase())
       return next(httpErrors.BadRequest(`Email must be in Lowercase.`));
 

@@ -14,6 +14,12 @@ app.use(compression({ level: 6 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use('/', (req, res) =>
+  res
+    .status(200)
+    .json({ status: 'ok', statusCode: 200, message: 'Hello from Cloudy.' })
+);
+
 // --------------- User Routes --------------- //
 app.use('/api', require('./routes/client/auth'));
 app.use('/api', require('./routes/client/dashboard'));
