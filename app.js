@@ -14,7 +14,7 @@ app.use(compression({ level: 6 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/', (req, res) =>
+app.get('/', (req, res) =>
   res
     .status(200)
     .json({ status: 'ok', statusCode: 200, message: 'Hello from Cloudy.' })
