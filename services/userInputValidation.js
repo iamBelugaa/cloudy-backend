@@ -2,7 +2,7 @@ const JOI = require('joi');
 
 const registrationValidationSchema = JOI.object({
   email: JOI.string().email().trim().lowercase().required(),
-  displayName: JOI.string().min(3).max(20).trim().lowercase().required(),
+  displayName: JOI.string().min(3).max(20).trim().required(),
   password: JOI.string().min(5).max(20).trim().required(),
 });
 
@@ -11,7 +11,7 @@ const emailVerificationSchema = JOI.object({
 });
 
 const displayNameVerificationSchema = JOI.object({
-  displayName: JOI.string().min(3).max(20).trim().lowercase().required(),
+  displayName: JOI.string().min(3).max(20).trim().required(),
 });
 
 const PasswordVerificationSchema = JOI.object({

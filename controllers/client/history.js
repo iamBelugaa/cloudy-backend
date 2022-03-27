@@ -4,7 +4,12 @@ const fs = require('fs');
 const path = require('path');
 const fileExtensions = require('../../helpers/getExtensions');
 
-async function getFiles(user, extension, res) {
+async function getFiles(
+  user,
+  extension,
+  res,
+  { pageNumber = 1, pageSize = 10 }
+) {
   try {
     const files = await File.find({
       'uploaderInfo.id': user._id,
@@ -13,12 +18,33 @@ async function getFiles(user, extension, res) {
       },
     })
       .sort('-createdAt')
-      .select('fileSize path receiverInfo createdAt uuid -_id')
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .select(
+        'originalName fileSize extension path receiverInfo createdAt uuid -_id'
+      )
       .lean()
       .exec();
     return res.status(200).json({ status: 'ok', files });
   } catch (error) {
     throw error;
+  }
+}
+
+async function getRecentFiles(user, req, res, next) {
+  try {
+    return await File.find({
+      'uploaderInfo.id': user._id,
+    })
+      .sort('-createdAt')
+      .limit(5)
+      .select(
+        'originalName fileSize extension path receiverInfo createdAt uuid -_id'
+      )
+      .lean()
+      .exec();
+  } catch (error) {
+    return next(error);
   }
 }
 
@@ -41,9 +67,23 @@ async function removeFile(user, req, res, next) {
   }
 }
 
+function paginate(req) {
+  const { pageNumber, pageSize } = req.query;
+
+  const number = pageNumber ? pageNumber : 1;
+  const size = pageSize && pageSize <= 10 ? pageSize : 10;
+
+  return { pageNumber: number, pageSize: size };
+}
+
 async function getImages(user, req, res, next) {
   try {
-    return await getFiles(user, fileExtensions.IMAGES_EXT, res);
+    const { pageNumber, pageSize } = paginate(req);
+
+    return await getFiles(user, fileExtensions.IMAGES_EXT, res, {
+      pageNumber,
+      pageSize,
+    });
   } catch (error) {
     return next(error);
   }
@@ -51,7 +91,11 @@ async function getImages(user, req, res, next) {
 
 async function getVideos(user, req, res, next) {
   try {
-    return await getFiles(user, fileExtensions.VIDEOS_EXT, res);
+    const { pageNumber, pageSize } = paginate(req);
+    return await getFiles(user, fileExtensions.VIDEOS_EXT, res, {
+      pageNumber,
+      pageSize,
+    });
   } catch (error) {
     return next(error);
   }
@@ -59,7 +103,11 @@ async function getVideos(user, req, res, next) {
 
 async function getDocuments(user, req, res, next) {
   try {
-    return await getFiles(user, fileExtensions.OTHERS_EXT, res);
+    const { pageNumber, pageSize } = paginate(req);
+    return await getFiles(user, fileExtensions.OTHERS_EXT, res, {
+      pageNumber,
+      pageSize,
+    });
   } catch (error) {
     return next(error);
   }
@@ -109,4 +157,5 @@ module.exports = {
   getVideos,
   getDocuments,
   removeFile,
+  getRecentFiles,
 };

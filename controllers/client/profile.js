@@ -6,6 +6,8 @@ async function userSettings(user, req, res, next) {
         displayName: user.displayName,
         email: user.email,
         createdAt: user.createdAt,
+        activeFiles: user.activeFiles,
+        activeStorage: user.activeStorage,
       },
     });
   } catch (error) {
