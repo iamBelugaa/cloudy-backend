@@ -33,7 +33,7 @@ async function getFiles(
 
 async function getRecentFiles(user, req, res, next) {
   try {
-    return await File.find({
+    const files = await File.find({
       'uploaderInfo.id': user._id,
     })
       .sort('-createdAt')
@@ -41,6 +41,7 @@ async function getRecentFiles(user, req, res, next) {
       .select('originalName fileSize extension createdAt uuid -_id')
       .lean()
       .exec();
+    return res.status(200).json({ status: 'ok', files });
   } catch (error) {
     return next(error);
   }
@@ -101,8 +102,11 @@ async function removeFile(user, req, res, next) {
     const { uuid } = req.body;
 
     if (!uuid) return next(httpErrors.BadRequest('Bruh just move on.'));
+    const file = await File.findOne({
+      uuid,
+      'uploaderInfo.id': user._id,
+    }).exec();
 
-    const file = await File.findOne({ uuid }).exec();
     if (!file) return next(httpErrors.BadRequest("File Doesn't Exist."));
 
     if (fs.existsSync(path.join(__dirname, '../../', file.path)))
