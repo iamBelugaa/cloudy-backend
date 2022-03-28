@@ -1,12 +1,12 @@
 const fileExtensions = require('./getExtensions');
 const File = require('../models/file');
 
-async function getCount(extensions, operator = '$in') {
+async function getCount(user, extensions) {
   try {
     return await File.find({
       'uploaderInfo.id': user._id,
       extension: {
-        operator: extensions,
+        $in: extensions,
       },
     })
       .count()
@@ -16,19 +16,12 @@ async function getCount(extensions, operator = '$in') {
   }
 }
 
-module.exports = async function getFilesCount() {
+module.exports = async function getFilesCount(user) {
   try {
     const imagesCount = await getCount(fileExtensions.IMAGES_EXT);
     const videosCount = await getCount(fileExtensions.VIDEOS_EXT);
     const musicCount = await getCount(fileExtensions.MUSIC_EXT);
-    const othersCount = await getCount(
-      [
-        ...fileExtensions.IMAGES_EXT,
-        ...fileExtensions.VIDEOS_EXT,
-        ...fileExtensions.MUSIC_EXT,
-      ],
-      '$nin'
-    );
+    const othersCount = await getCount(...fileExtensions.OTHER_EXT);
 
     return { imagesCount, videosCount, musicCount, othersCount };
   } catch (error) {

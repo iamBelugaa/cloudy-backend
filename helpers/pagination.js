@@ -1,4 +1,4 @@
-module.exportsexpor = function paginate(req) {
+module.exports = function paginate(req) {
   const { pageNumber, pageSize } = req.query;
 
   const number = pageNumber ? pageNumber : 1;

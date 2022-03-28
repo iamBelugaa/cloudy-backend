@@ -70,4 +70,6 @@ const MUSIC_EXT = [
   '.zab',
 ];
 
-module.exports = { IMAGES_EXT, VIDEOS_EXT, MUSIC_EXT };
+const OTHER_EXT = [].concat(IMAGES_EXT, VIDEOS_EXT, MUSIC_EXT);
+
+module.exports = { IMAGES_EXT, VIDEOS_EXT, MUSIC_EXT, OTHER_EXT };

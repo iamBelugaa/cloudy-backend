@@ -86,26 +86,11 @@ async function getMusic(user, req, res, next) {
 async function getOtherFiles(user, req, res, next) {
   try {
     const { pageNumber, pageSize } = paginate(req);
-    const extensions = [
-      ...fileExtensions.IMAGES_EXT,
-      ...fileExtensions.MUSIC_EXT,
-      ...fileExtensions.VIDEOS_EXT,
-    ];
 
-    const files = await File.find({
-      'uploaderInfo.id': user._id,
-      extension: {
-        $nin: extensions,
-      },
-    })
-      .sort('-createdAt')
-      .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize)
-      .select('originalName fileSize extension createdAt uuid -_id')
-      .lean()
-      .exec();
-
-    return res.status(200).json({ status: 'ok', files });
+    return await getFiles(user, fileExtensions.OTHER_EXT, res, {
+      pageNumber,
+      pageSize,
+    });
   } catch (error) {
     return next(error);
   }

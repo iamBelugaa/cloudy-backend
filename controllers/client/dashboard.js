@@ -3,7 +3,7 @@ const getFilesCount = require('../../helpers/getFilesCount');
 async function getDashboardDetails(user, req, res, next) {
   try {
     const { imagesCount, videosCount, musicCount, othersCount } =
-      await getFilesCount();
+      await getFilesCount(user);
 
     return res.status(200).json({
       status: 'ok',

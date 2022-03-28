@@ -44,7 +44,7 @@ Router.post(
 Router.delete(
   '/remove-history',
   authorizeUser,
-  require('../../controllers/client/file-history').removeHistory
+  require('../../controllers/client/files-history').removeHistory
 );
 
 Router.get(
@@ -80,7 +80,7 @@ Router.get(
 Router.delete(
   '/delete-file',
   authorizeUser,
-  require('../../controllers/client/file-history').removeFile
+  require('../../controllers/client/files-history').removeFile
 );
 
 module.exports = Router;
