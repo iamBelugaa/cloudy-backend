@@ -18,10 +18,17 @@ async function getCount(user, extensions) {
 
 module.exports = async function getFilesCount(user) {
   try {
-    const imagesCount = await getCount(fileExtensions.IMAGES_EXT);
-    const videosCount = await getCount(fileExtensions.VIDEOS_EXT);
-    const musicCount = await getCount(fileExtensions.MUSIC_EXT);
-    const othersCount = await getCount(...fileExtensions.OTHER_EXT);
+    const imagesCount = await getCount(user, fileExtensions.IMAGES_EXT);
+    const videosCount = await getCount(user, fileExtensions.VIDEOS_EXT);
+    const musicCount = await getCount(user, fileExtensions.MUSIC_EXT);
+    const othersCount = await File.find({
+      'uploaderInfo.id': user._id,
+      extension: {
+        $nin: fileExtensions.OTHER_EXT,
+      },
+    })
+      .count()
+      .exec();
 
     return { imagesCount, videosCount, musicCount, othersCount };
   } catch (error) {
