@@ -3,10 +3,11 @@ const File = require('../../models/file');
 const fs = require('fs');
 const path = require('path');
 const fileExtensions = require('../../helpers/getExtensions');
+const paginate = require('../../helpers/pagination');
 
 async function getFiles(
   user,
-  extension,
+  extensions,
   res,
   { pageNumber = 1, pageSize = 10 }
 ) {
@@ -14,17 +15,16 @@ async function getFiles(
     const files = await File.find({
       'uploaderInfo.id': user._id,
       extension: {
-        $in: extension,
+        $in: extensions,
       },
     })
       .sort('-createdAt')
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
-      .select(
-        'originalName fileSize extension path receiverInfo createdAt uuid -_id'
-      )
+      .select('originalName fileSize extension createdAt uuid -_id')
       .lean()
       .exec();
+
     return res.status(200).json({ status: 'ok', files });
   } catch (error) {
     throw error;
@@ -38,42 +38,12 @@ async function getRecentFiles(user, req, res, next) {
     })
       .sort('-createdAt')
       .limit(5)
-      .select(
-        'originalName fileSize extension path receiverInfo createdAt uuid -_id'
-      )
+      .select('originalName fileSize extension createdAt uuid -_id')
       .lean()
       .exec();
   } catch (error) {
     return next(error);
   }
-}
-
-async function removeFile(user, req, res, next) {
-  try {
-    const { uuid } = req.body;
-    if (!uuid) return next(httpErrors.BadRequest('Bruh just move on.'));
-
-    const file = await File.findOne({ uuid }).exec();
-    if (!file) return next(httpErrors.BadRequest("File Doesn't Exist."));
-
-    if (fs.existsSync(path.join(__dirname, '../../', file.path)))
-      fs.unlinkSync(path.join(__dirname, '../../', file.path));
-
-    await user.decreaseFilesCountAndStorage(file.fileSize);
-    await file.remove();
-    return res.status(200).json({ status: 'ok', message: 'File Deleted.' });
-  } catch (error) {
-    return next(error);
-  }
-}
-
-function paginate(req) {
-  const { pageNumber, pageSize } = req.query;
-
-  const number = pageNumber ? pageNumber : 1;
-  const size = pageSize && pageSize <= 10 ? pageSize : 10;
-
-  return { pageNumber: number, pageSize: size };
 }
 
 async function getImages(user, req, res, next) {
@@ -101,13 +71,61 @@ async function getVideos(user, req, res, next) {
   }
 }
 
-async function getDocuments(user, req, res, next) {
+async function getMusic(user, req, res, next) {
   try {
     const { pageNumber, pageSize } = paginate(req);
-    return await getFiles(user, fileExtensions.OTHERS_EXT, res, {
+    return await getFiles(user, fileExtensions.MUSIC_EXT, res, {
       pageNumber,
       pageSize,
     });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getOtherFiles(user, req, res, next) {
+  try {
+    const { pageNumber, pageSize } = paginate(req);
+    const extensions = [
+      ...fileExtensions.IMAGES_EXT,
+      ...fileExtensions.MUSIC_EXT,
+      ...fileExtensions.VIDEOS_EXT,
+    ];
+
+    const files = await File.find({
+      'uploaderInfo.id': user._id,
+      extension: {
+        $nin: extensions,
+      },
+    })
+      .sort('-createdAt')
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .select('originalName fileSize extension createdAt uuid -_id')
+      .lean()
+      .exec();
+
+    return res.status(200).json({ status: 'ok', files });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function removeFile(user, req, res, next) {
+  try {
+    const { uuid } = req.body;
+
+    if (!uuid) return next(httpErrors.BadRequest('Bruh just move on.'));
+
+    const file = await File.findOne({ uuid }).exec();
+    if (!file) return next(httpErrors.BadRequest("File Doesn't Exist."));
+
+    if (fs.existsSync(path.join(__dirname, '../../', file.path)))
+      fs.unlinkSync(path.join(__dirname, '../../', file.path));
+
+    await user.decreaseFilesCountAndStorage(file.fileSize);
+    await file.remove();
+    return res.status(200).json({ status: 'ok', message: 'File Deleted.' });
   } catch (error) {
     return next(error);
   }
@@ -155,7 +173,8 @@ module.exports = {
   removeHistory,
   getImages,
   getVideos,
-  getDocuments,
+  getMusic,
+  getOtherFiles,
   removeFile,
   getRecentFiles,
 };

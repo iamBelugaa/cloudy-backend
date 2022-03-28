@@ -30,12 +30,6 @@ Router.post(
 );
 
 Router.delete(
-  '/remove-history',
-  authorizeUser,
-  require('../../controllers/client/history').removeHistory
-);
-
-Router.delete(
   '/delete-account',
   authorizeUser,
   require('../../controllers/client/delete-account')
@@ -47,28 +41,46 @@ Router.post(
   require('../../controllers/client/change-password')
 );
 
+Router.delete(
+  '/remove-history',
+  authorizeUser,
+  require('../../controllers/client/file-history').removeHistory
+);
+
+Router.get(
+  '/recent-files',
+  authorizeUser,
+  require('../../controllers/client/files-history').getRecentFiles
+);
+
 Router.get(
   '/images',
   authorizeUser,
-  require('../../controllers/client/history').getImages
+  require('../../controllers/client/files-history').getImages
 );
 
 Router.get(
   '/videos',
   authorizeUser,
-  require('../../controllers/client/history').getVideos
+  require('../../controllers/client/files-history').getVideos
 );
 
 Router.get(
-  '/documents',
+  '/music',
   authorizeUser,
-  require('../../controllers/client/history').getDocuments
+  require('../../controllers/client/files-history').getMusic
 );
 
-Router.post(
+Router.get(
+  '/others',
+  authorizeUser,
+  require('../../controllers/client/files-history').getOtherFiles
+);
+
+Router.delete(
   '/delete-file',
   authorizeUser,
-  require('../../controllers/client/history').removeFile
+  require('../../controllers/client/file-history').removeFile
 );
 
 module.exports = Router;
