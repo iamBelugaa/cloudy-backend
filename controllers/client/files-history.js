@@ -134,13 +134,16 @@ async function removeHistory(user, req, res, next) {
         .status(200)
         .json({ status: 'ok', message: 'No History Found.' });
 
+    await File.deleteMany({
+      'uploaderInfo.id': user._id,
+    }).exec();
+
     let fileSize = 0;
     filesToDelete.forEach(async (file) => {
       try {
+        fileSize += file.fileSize;
         if (fs.existsSync(path.join(__dirname, '../../', file.path)))
           fs.unlinkSync(path.join(__dirname, '../../', file.path));
-        fileSize += file.fileSize;
-        await file.remove();
       } catch (error) {
         return next(httpErrors.InternalServerError('Error deleting files.'));
       }
