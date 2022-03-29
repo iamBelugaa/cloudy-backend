@@ -42,7 +42,7 @@ Router.post(
 );
 
 Router.delete(
-  '/remove-history',
+  '/clear-storage',
   authorizeUser,
   require('../../controllers/client/files-history').removeHistory
 );
