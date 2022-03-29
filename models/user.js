@@ -16,9 +16,9 @@ const UserSchema = new mongoose.Schema(
       default: 'User',
       required: true,
     },
-    activeFiles: { type: Number, default: 0, required: false },
-    totalEmailsSent: { type: Number, default: 0, required: false },
-    activeStorage: { type: Number, default: 0, required: false },
+    activeFiles: { type: Number, default: 0, required: false, min: 0 },
+    totalEmailsSent: { type: Number, default: 0, required: false, min: 0 },
+    activeStorage: { type: Number, default: 0, required: false, min: 0 },
   },
   { timestamps: true }
 );
