@@ -31,10 +31,10 @@ UserSchema.methods.checkPassword = async function (password) {
   }
 };
 
-UserSchema.methods.changeInformation = async function ({ email, username }) {
+UserSchema.methods.changeInformation = async function ({ email, displayName }) {
   try {
     this.email = email;
-    this.username = username;
+    this.displayName = displayName;
     return this.save();
   } catch (error) {
     throw new Error('Something Went Wrong. Please Try Again Later.');

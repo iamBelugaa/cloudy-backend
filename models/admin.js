@@ -35,14 +35,5 @@ AdminSchema.methods.checkPassword = async function (password) {
   }
 };
 
-AdminSchema.methods.updateLoginsCount = async function () {
-  try {
-    this.totalLogins++;
-    return this.save();
-  } catch (error) {
-    throw new Error('Something Went Wrong. Please Try Again Later.');
-  }
-};
-
 const Admin = mongoose.model('Admin', AdminSchema);
 module.exports = Admin;

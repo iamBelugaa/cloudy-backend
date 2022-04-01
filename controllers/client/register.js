@@ -19,32 +19,22 @@ async function registerUser(req, res, next) {
     if (userDetails.email !== userDetails.email.toLowerCase())
       return next(httpErrors.BadRequest(`Email must be in Lowercase.`));
 
-    const isValidRegistrationDetails = await registrationValidation(
-      userDetails,
-      next
-    );
-
-    if (isValidRegistrationDetails) {
-      const existEmail = await checkEmail(isValidRegistrationDetails.email);
-
-      if (existEmail)
-        return next(
-          httpErrors.Conflict(
-            `"${isValidRegistrationDetails.email}" is already registered.`
-          )
-        );
-
-      const hashedPassword = await hashPassword(
-        isValidRegistrationDetails.password
+    const existEmail = await checkEmail(userDetails.email.trim());
+    if (existEmail)
+      return next(
+        httpErrors.Conflict(`"${userDetails.email}" is already registered.`)
       );
 
-      const user = new User({
-        email: isValidRegistrationDetails.email,
-        displayName: isValidRegistrationDetails.displayName,
+    const validDetails = await registrationValidation(userDetails, next);
+    if (validDetails) {
+      const hashedPassword = await hashPassword(validDetails.password);
+
+      const user = await User.create({
+        email: validDetails.email,
+        displayName: validDetails.displayName,
         password: hashedPassword,
       });
 
-      await user.save();
       const token = await generateAccessToken({
         id: user._id,
         email: user.email,
