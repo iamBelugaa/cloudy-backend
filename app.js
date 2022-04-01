@@ -8,7 +8,9 @@ const app = express();
 app.disable('x-powered-by');
 
 // --------------- Middlewares --------------- //
-app.use(cors({ origin: 'https://cloudy-file.netlify.app' }));
+app.use(
+  cors({ origin: ['https://cloudy-file.netlify.app', 'http://localhost:3000'] })
+);
 app.use(helmet());
 app.use(compression({ level: 6 }));
 app.use(express.json());
