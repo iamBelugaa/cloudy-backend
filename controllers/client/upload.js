@@ -43,8 +43,7 @@ async function uploadFile(user, req, res, next) {
 
       return res.status(200).json({
         status: 'ok',
-        downloadLink: `${process.env.ROOT_DOMAIN}/api/file/${file.uuid}`,
-        message: 'File uploaded. Copy the link or send it via Email.',
+        uuid: file.uuid,
       });
     });
   } catch (error) {
