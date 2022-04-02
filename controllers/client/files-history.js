@@ -37,7 +37,7 @@ async function getRecentFiles(user, req, res, next) {
       'uploaderInfo.id': user._id,
     })
       .sort('-createdAt')
-      .limit(5)
+      .limit(10)
       .select('originalName fileSize extension createdAt uuid -_id')
       .lean()
       .exec();
@@ -88,10 +88,35 @@ async function getOtherFiles(user, req, res, next) {
   try {
     const { pageNumber, pageSize } = paginate(req);
 
-    return await getFiles(user, fileExtensions.OTHER_EXT, res, {
-      pageNumber,
-      pageSize,
-    });
+    const files = await File.find({
+      'uploaderInfo.id': user._id,
+      extension: {
+        $nin: fileExtensions.OTHER_EXT,
+      },
+    })
+      .sort('-createdAt')
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .select('originalName fileSize extension createdAt uuid -_id')
+      .lean()
+      .exec();
+
+    return res.status(200).json({ status: 'ok', files });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getAllFiles(user, req, res, next) {
+  try {
+    const files = await File.find({
+      'uploaderInfo.id': user._id,
+    })
+      .sort('-createdAt')
+      .select('originalName fileSize extension createdAt uuid -_id')
+      .lean()
+      .exec();
+    return res.status(200).json({ status: 'ok', files });
   } catch (error) {
     return next(error);
   }
@@ -169,4 +194,5 @@ module.exports = {
   getOtherFiles,
   removeFile,
   getRecentFiles,
+  getAllFiles,
 };

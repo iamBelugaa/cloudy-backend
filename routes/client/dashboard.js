@@ -54,6 +54,12 @@ Router.get(
 );
 
 Router.get(
+  '/files',
+  authorizeUser,
+  require('../../controllers/client/files-history').getAllFiles
+);
+
+Router.get(
   '/images',
   authorizeUser,
   require('../../controllers/client/files-history').getImages
