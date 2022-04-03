@@ -35,6 +35,7 @@ const VIDEOS_EXT = [
   '.webm',
   '.wmv',
   '.yuv',
+  '.ts',
 ];
 
 const MUSIC_EXT = [
