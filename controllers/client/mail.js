@@ -31,13 +31,13 @@ async function sendEmailToClient(user, req, res, next) {
       await sendMail({
         from: process.env.MAIL_CLIENT,
         to: emailTo,
-        subject: `Drop.it File Sharing. ${user.email} shared a file with you.`,
+        subject: `Cloudy File Sharing. ${user.email} shared a file with you.`,
         text: `${user.email} shared a file with you. Total size ${formatBytes(
           file.fileSize
         )}.`,
         html: htmlTemplate({
           emailFrom: user.email,
-          downloadLink: `${process.env.ROOT_DOMAIN}/api/file/${file.uuid}`,
+          downloadLink: `https://cloudy-file.netlify.app/download/${file.uuid}`,
           size: formatBytes(file.fileSize),
         }),
       });
