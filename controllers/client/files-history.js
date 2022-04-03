@@ -178,8 +178,8 @@ async function removeHistory(user, req, res, next) {
     return res.status(200).json({
       status: 'ok',
       message: `${filesToDelete.length} ${
-        filesToDelete.length === 1 ? 'file' : 'files'
-      } Were Removed.`,
+        filesToDelete.length === 1 ? 'file was' : 'files were'
+      } removed.`,
     });
   } catch (error) {
     return next(error);
