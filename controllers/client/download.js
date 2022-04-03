@@ -29,9 +29,9 @@ async function getDownloadLink(req, res, next) {
         return res.status(200).json({
           status: 'ok',
           data: {
-            fileName: getSmallFileName(existFile.fileName),
+            fileName: existFile.originalName,
             fileSize: formatBytes(existFile.fileSize),
-            downloadLink: `${process.env.ROOT_DOMAIN}/api/file/${existFile.uuid}`,
+            downloadLink: `${process.env.ROOT_DOMAIN}/api/download/${existFile.uuid}`,
           },
         });
     }
