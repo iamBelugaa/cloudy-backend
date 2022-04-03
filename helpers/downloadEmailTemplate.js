@@ -5,7 +5,7 @@ module.exports = ({ emailFrom, downloadLink, size, expires }) => {
             <head>
                 <meta name="viewport" content="width=device-width">
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-                <title>Drop.it Transactional Email</title>
+                <title>Cloudy Transactional Email</title>
                 <style>
                 /* -------------------------------------
                     INLINED WITH htmlemail.io/inline
