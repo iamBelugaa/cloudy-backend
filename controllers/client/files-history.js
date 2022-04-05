@@ -103,6 +103,7 @@ async function removeFile(user, req, res, next) {
     const { uuid } = req.body;
 
     if (!uuid) return next(httpErrors.BadRequest('Bruh just move on.'));
+
     const file = await File.findOne({
       uuid,
       'uploaderInfo.id': user._id,

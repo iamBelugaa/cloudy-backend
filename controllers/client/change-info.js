@@ -34,13 +34,10 @@ async function changeUserInformation(user, req, res, next) {
     if (email)
       validEmail = await emailVerificationSchema.validateAsync({ email });
 
-    console.log(validDisplayName, validEmail);
-
-    if (validDisplayName || validEmail) {
-      await user.changeInformation({
-        displayName: validDisplayName?.displayName || user.displayName,
-        email: validEmail?.email || user.email,
-      });
+    if (validDisplayName && validEmail) {
+      user.email = validEmail.email;
+      user.displayName = validDisplayName.displayName;
+      await user.save();
 
       return res.status(200).json({
         status: 'ok',
@@ -49,7 +46,7 @@ async function changeUserInformation(user, req, res, next) {
           email: user.email,
         }),
       });
-    }
+    } else next(httpErrors.BadRequest());
   } catch (error) {
     return next(error);
   }
