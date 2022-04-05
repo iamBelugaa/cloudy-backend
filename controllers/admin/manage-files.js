@@ -14,7 +14,7 @@ async function getFiles(user, extension, res) {
       },
     })
       .sort('-createdAt')
-      .select('fileSize uuid uploaderInfo.email receiverInfo createdAt -_id')
+      .select('originalName fileSize uuid uploaderInfo.email createdAt -_id')
       .lean()
       .exec();
     return res.status(200).json({ status: 'ok', files });
@@ -42,6 +42,35 @@ async function getVideos(user, req, res, next) {
 async function getDocuments(user, req, res, next) {
   try {
     return await getFiles(user, fileExtensions.OTHERS_EXT, res);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getAllFiles(user, req, res, next) {
+  try {
+    const files = await File.find({
+      'uploaderInfo.id': { $ne: user._id },
+    })
+      .sort('-createdAt')
+      .select('originalName fileSize extension createdAt uuid -_id')
+      .lean()
+      .exec();
+    return res.status(200).json({ status: 'ok', files });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function getRecentFiles(user, req, res, next) {
+  try {
+    const files = await File.find({})
+      .sort('-createdAt')
+      .limit(10)
+      .select('originalName fileSize extension createdAt uuid -_id')
+      .lean()
+      .exec();
+    return res.status(200).json({ status: 'ok', files });
   } catch (error) {
     return next(error);
   }
@@ -79,4 +108,6 @@ module.exports = {
   getVideos,
   getDocuments,
   removeFile,
+  getAllFiles,
+  getRecentFiles,
 };

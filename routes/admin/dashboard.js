@@ -64,6 +64,18 @@ Router.post(
 );
 
 Router.get(
+  '/files',
+  authorizeAdmin,
+  require('../../controllers/admin/manage-files').getAllFiles
+);
+
+Router.get(
+  '/recent-files',
+  authorizeAdmin,
+  require('../../controllers/admin/manage-files').getRecentFiles
+);
+
+Router.get(
   '/images',
   authorizeAdmin,
   require('../../controllers/admin/manage-files').getImages
@@ -76,13 +88,13 @@ Router.get(
 );
 
 Router.get(
-  '/documents',
+  '/others',
   authorizeAdmin,
   require('../../controllers/admin/manage-files').getDocuments
 );
 
 Router.post(
-  '/remove-file',
+  '/delete-file',
   authorizeAdmin,
   require('../../controllers/admin/manage-files').removeFile
 );
