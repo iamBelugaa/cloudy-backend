@@ -27,7 +27,14 @@ async function loginUser(req, res, next) {
 
         return res.status(200).json({
           status: 'ok',
-          token,
+          data: {
+            token,
+            user: {
+              id: admin.id,
+              email: admin.email,
+              displayName: admin.displayName,
+            },
+          },
         });
       } else
         return next(

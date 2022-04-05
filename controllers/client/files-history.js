@@ -5,12 +5,7 @@ const path = require('path');
 const fileExtensions = require('../../helpers/getExtensions');
 const paginate = require('../../helpers/pagination');
 
-async function getFiles(
-  user,
-  extensions,
-  res,
-  { pageNumber = 1, pageSize = 10 }
-) {
+async function getFiles(user, extensions, res) {
   try {
     const files = await File.find({
       'uploaderInfo.id': user._id,
@@ -19,8 +14,6 @@ async function getFiles(
       },
     })
       .sort('-createdAt')
-      .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize)
       .select('originalName fileSize extension createdAt uuid -_id')
       .lean()
       .exec();
@@ -49,12 +42,7 @@ async function getRecentFiles(user, req, res, next) {
 
 async function getImages(user, req, res, next) {
   try {
-    const { pageNumber, pageSize } = paginate(req);
-
-    return await getFiles(user, fileExtensions.IMAGES_EXT, res, {
-      pageNumber,
-      pageSize,
-    });
+    return await getFiles(user, fileExtensions.IMAGES_EXT, res);
   } catch (error) {
     return next(error);
   }
@@ -62,11 +50,7 @@ async function getImages(user, req, res, next) {
 
 async function getVideos(user, req, res, next) {
   try {
-    const { pageNumber, pageSize } = paginate(req);
-    return await getFiles(user, fileExtensions.VIDEOS_EXT, res, {
-      pageNumber,
-      pageSize,
-    });
+    return await getFiles(user, fileExtensions.VIDEOS_EXT);
   } catch (error) {
     return next(error);
   }
@@ -74,11 +58,7 @@ async function getVideos(user, req, res, next) {
 
 async function getMusic(user, req, res, next) {
   try {
-    const { pageNumber, pageSize } = paginate(req);
-    return await getFiles(user, fileExtensions.MUSIC_EXT, res, {
-      pageNumber,
-      pageSize,
-    });
+    return await getFiles(user, fileExtensions.MUSIC_EXT, res);
   } catch (error) {
     return next(error);
   }
@@ -86,8 +66,6 @@ async function getMusic(user, req, res, next) {
 
 async function getOtherFiles(user, req, res, next) {
   try {
-    const { pageNumber, pageSize } = paginate(req);
-
     const files = await File.find({
       'uploaderInfo.id': user._id,
       extension: {
@@ -95,8 +73,6 @@ async function getOtherFiles(user, req, res, next) {
       },
     })
       .sort('-createdAt')
-      .skip((pageNumber - 1) * pageSize)
-      .limit(pageSize)
       .select('originalName fileSize extension createdAt uuid -_id')
       .lean()
       .exec();
