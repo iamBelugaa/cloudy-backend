@@ -64,7 +64,5 @@ following command.
 ## Running the project
 
     $ yarn start
+    $ yarn run dev (for development)
 
-## Simple build for production
-
-    $ yarn build
